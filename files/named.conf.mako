@@ -14,12 +14,7 @@ options {
 	dump-file 	"/var/named/data/cache_dump.db";
 	statistics-file "/var/named/data/named_stats.txt";
 	memstatistics-file "/var/named/data/named_mem_stats.txt";
-	allow-query { 127.0.0.0/8; ::1/128; 172.17.0.0/16; };
-	forwarders {
-	% for forwarder in nameservers:
-	    ${forwarder};
-	% endfor
-	};
+	allow-query { 0.0.0.0/0; ::/0; };
 
 	/* 
 	 - If you are building an AUTHORITATIVE DNS server, do NOT enable recursion.
@@ -31,7 +26,7 @@ options {
 	   attacks. Implementing BCP38 within your network would greatly
 	   reduce such attack surface 
 	*/
-	recursion yes;
+	recursion no;
 
 	dnssec-enable yes;
 	dnssec-validation yes;
@@ -64,3 +59,9 @@ zone "." IN {
 include "/etc/named.rfc1912.zones";
 include "/etc/named.root.key";
 
+% for domain, data in domains.items():
+zone "${domain}" {
+    type master;
+    file "/etc/named/${domain}";
+};
+% endfor

@@ -6,27 +6,22 @@ import yaml
 import mako.template
 import subprocess
 
-# Read template
+# Read templates
 with open("/files/named.conf.mako") as stream:
-    template = mako.template.Template(stream.read())
+    conf_template = mako.template.Template(stream.read())
+with open("/files/zones.mako") as stream:
+    zone_template = mako.template.Template(stream.read())
 
 # Read configuration file
 with open("/config.yaml") as stream:
     data = yaml.load(stream)
 
-# Fallback to /etc/resolv.conf contents
-if not data.get("nameservers"):
-    if "nameservers" in data:
-	del data["nameservers"]
-    with open("/etc/resolv.conf") as stream:
-	for line in stream:
-	    line = line.strip()
-	    if line.startswith("nameserver "):
-		data.setdefault("nameservers", []).append(line.split()[1])
-
-# Write configuration file
+# Write configuration files
 with open("/etc/named.conf", "w") as stream:
-    print(template.render(**data), file=stream)
+    print(conf_template.render(**data), file=stream)
+for domain, records in data["domains"].items():
+    with open("/etc/named/{}".format(domain), "w") as stream:
+        print(zone_template.render(**vars()), file=stream)
 
 # Run the nameserver
 subprocess.check_call(["/usr/sbin/named", "-u", "named", "-g"])

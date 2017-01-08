@@ -1,2 +1,29 @@
-nameservers:
-#    - 208.69.38.205
+domains:
+    example.net:
+        "@":
+            SOA:
+                - master.ns hostmaster 0000000000 1d 15m 4w 10m
+            NS:
+                - a.ns.example.net.
+                - b.ns.example.net.
+        a.ns:
+            A:
+                - 192.0.2.1
+            AAAA:
+                - 2001:db8::1
+        b.ns:
+            A:
+                - 192.0.2.2
+            AAAA:
+                - 2001:db8::2
+        server:
+            A:
+                - 192.0.2.3
+            AAAA:
+                - 2001:db8::3
+        www:
+            CNAME:
+                - server
+        _xmpp-server._tcp:
+            SRV:
+                - 10 0 5269 server
