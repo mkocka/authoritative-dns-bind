@@ -19,9 +19,9 @@ with open("/config.yaml") as stream:
 # Write configuration files
 with open("/etc/named.conf", "w") as stream:
     print(conf_template.render(**data), file=stream)
-for domain, records in data["domains"].items():
+for domain, domain_data in data["domains"].items():
     with open("/etc/named/{}".format(domain), "w") as stream:
-        print(zone_template.render(**vars()), file=stream)
+        print(zone_template.render(**domain_data), file=stream)
 
 # Run the nameserver
 subprocess.check_call(["/usr/sbin/named", "-u", "named", "-g"])
