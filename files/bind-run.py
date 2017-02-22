@@ -13,7 +13,7 @@ with open("/files/zones.mako") as stream:
     zone_template = mako.template.Template(stream.read())
 
 # Read configuration file
-with open("/config.yaml") as stream:
+with open("/files/config.yaml") as stream:
     data = yaml.load(stream)
 
 # Write configuration files
